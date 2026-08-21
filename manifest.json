@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.local.omarchy-vibez",
+  "name": "Omarchy Vibez",
+  "version": "0.1.0",
+  "author": "Local",
+  "license": "MIT",
+  "description": "vibez Apple Music controls and now-playing status for the Omarchy bar.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "vibez",
+    "description": "Control vibez through its MPRIS player: now playing, album art, progress, and transport controls.",
+    "category": "Media",
+    "aliases": ["vibez", "apple-music", "music", "now-playing"],
+    "allowMultiple": false,
+    "defaultSection": "center",
+    "defaults": {
+      "showTitle": true,
+      "showArtist": true,
+      "hideWhenClosed": false,
+      "leftClick": "Open panel"
+    },
+    "schema": [
+      {
+        "key": "showTitle",
+        "type": "boolean",
+        "label": "Show track title",
+        "defaultValue": true
+      },
+      {
+        "key": "showArtist",
+        "type": "boolean",
+        "label": "Show artist",
+        "defaultValue": true
+      },
+      {
+        "key": "hideWhenClosed",
+        "type": "boolean",
+        "label": "Hide when vibez is not running",
+        "defaultValue": false
+      },
+      {
+        "key": "leftClick",
+        "type": "enum",
+        "label": "Left click",
+        "options": ["Open panel", "Play/pause"],
+        "defaultValue": "Open panel"
+      }
+    ]
+  }
+}
