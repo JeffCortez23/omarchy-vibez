@@ -107,6 +107,7 @@ Panel {
         Text {
           anchors.verticalCenter: parent.verticalCenter
           text: root.label
+          textFormat: Text.PlainText
           color: root.playing ? root.contentForeground : root.dimForeground
           font.family: root.contentFontFamily
           font.pixelSize: Style.font.caption
@@ -237,6 +238,7 @@ Panel {
             Text {
               width: parent.width
               text: root.trackTitle || "vibez"
+              textFormat: Text.PlainText
               color: root.contentForeground
               font.family: root.contentFontFamily
               font.pixelSize: Style.font.subtitle
@@ -249,6 +251,7 @@ Panel {
             Text {
               width: parent.width
               text: root.trackArtist || "Apple Music"
+              textFormat: Text.PlainText
               color: root.contentForeground
               opacity: 0.82
               font.family: root.contentFontFamily
@@ -261,6 +264,7 @@ Panel {
               visible: root.trackAlbum !== ""
               width: parent.width
               text: root.trackAlbum
+              textFormat: Text.PlainText
               color: root.dimForeground
               font.family: root.contentFontFamily
               font.pixelSize: Style.font.caption
@@ -317,6 +321,7 @@ Panel {
 
             Text {
               text: root.formatTime(root.trackPosition)
+              textFormat: Text.PlainText
               color: root.dimForeground
               font.family: root.contentFontFamily
               font.pixelSize: Style.font.caption
@@ -326,6 +331,7 @@ Panel {
 
             Text {
               text: root.formatTime(root.trackLength)
+              textFormat: Text.PlainText
               color: root.dimForeground
               font.family: root.contentFontFamily
               font.pixelSize: Style.font.caption
