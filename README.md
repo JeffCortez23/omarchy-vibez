@@ -161,6 +161,25 @@ omarchy restart shell
 
 ---
 
+## 🗑️ Removal & Uninstallation
+
+To remove the plugin from your Omarchy setup:
+
+```bash
+# 1. Disable the widget from the bar
+omarchy plugin disable io.github.jeffcortez23.omarchy-vibez
+
+# 2. Remove the plugin
+omarchy plugin remove io.github.jeffcortez23.omarchy-vibez --yes
+
+# 3. Reload shell
+omarchy restart shell
+```
+
+Removing the plugin deletes its checkout from `~/.config/omarchy/plugins/` and removes its widget placement from your bar configuration. No background services, temporary files, or credentials remain on disk.
+
+---
+
 ## 🛠️ Troubleshooting
 
 - **Widget says "vibez is not running"**: Start `vibez` in your terminal and begin playback once. The plugin attaches as soon as the MPRIS player becomes active.
