@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "io.github.local.omarchy-vibez",
+  "id": "io.github.jeffcortez23.omarchy-vibez",
   "name": "Omarchy Vibez",
   "version": "0.1.0",
-  "author": "Local",
+  "author": "Jeff Cortez",
   "license": "MIT",
-  "description": "vibez Apple Music controls and now-playing status for the Omarchy bar.",
+  "description": "vibez Apple Music controls and now-playing status for the Omarchy status bar.",
   "kinds": ["bar-widget"],
   "entryPoints": {
     "barWidget": "Panel.qml"
@@ -14,40 +14,65 @@
     "displayName": "vibez",
     "description": "Control vibez through its MPRIS player: now playing, album art, progress, and transport controls.",
     "category": "Media",
-    "aliases": ["vibez", "apple-music", "music", "now-playing"],
+    "aliases": ["vibez", "apple-music", "music", "now-playing", "omarchy-vibez"],
     "allowMultiple": false,
     "defaultSection": "center",
     "defaults": {
       "showTitle": true,
       "showArtist": true,
+      "showLabelOnBar": false,
+      "maxLabelWidth": 180,
       "hideWhenClosed": false,
-      "leftClick": "Open panel"
+      "leftClick": "Open panel",
+      "scrollAction": "Previous/next track"
     },
     "schema": [
       {
         "key": "showTitle",
         "type": "boolean",
-        "label": "Show track title",
+        "label": "Show track title in tooltip and panel",
         "defaultValue": true
       },
       {
         "key": "showArtist",
         "type": "boolean",
-        "label": "Show artist",
+        "label": "Show artist in tooltip and panel",
         "defaultValue": true
+      },
+      {
+        "key": "showLabelOnBar",
+        "type": "boolean",
+        "label": "Show track label directly on the bar",
+        "defaultValue": false
+      },
+      {
+        "key": "maxLabelWidth",
+        "type": "integer",
+        "label": "Maximum bar label width (px)",
+        "min": 60,
+        "max": 400,
+        "step": 10,
+        "defaultValue": 180
       },
       {
         "key": "hideWhenClosed",
         "type": "boolean",
-        "label": "Hide when vibez is not running",
+        "label": "Hide widget when vibez is not running",
         "defaultValue": false
       },
       {
         "key": "leftClick",
         "type": "enum",
-        "label": "Left click",
+        "label": "Left click action",
         "options": ["Open panel", "Play/pause"],
         "defaultValue": "Open panel"
+      },
+      {
+        "key": "scrollAction",
+        "type": "enum",
+        "label": "Mouse wheel scroll action",
+        "options": ["Previous/next track", "Disabled"],
+        "defaultValue": "Previous/next track"
       }
     ]
   }

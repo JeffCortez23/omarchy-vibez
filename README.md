@@ -1,67 +1,196 @@
 # Omarchy Vibez
 
-`omarchy-vibez` adds a vibez controller to the Omarchy bar.
+Apple Music from [`vibez`](https://github.com/simonepelosi/vibez), seamlessly integrated into the Omarchy status bar.
 
-It talks to vibez through MPRIS, so vibez must be running for now-playing data
-and transport controls to appear. Recent vibez builds export the
-`org.mpris.MediaPlayer2.vibez` D-Bus player on Linux.
+**Omarchy Vibez** is a native Omarchy shell plugin that reads the MPRIS player exported by [`vibez`](https://github.com/simonepelosi/vibez). It provides a theme-aware bar widget with now-playing metadata, album art, interactive seekable progress bar, and media transport controls, while keeping the full `vibez` TUI accessible in a persistent terminal session.
 
-## Features
+![Omarchy Vibez panel](assets/panel.png)
 
-- Bar icon with optional current track and artist.
-- Popup with album art, title, artist, album, progress, and transport controls.
-- Middle/right click play-pause from the bar.
-- Launch button for opening `vibez` in a terminal.
-- Theme-aware colors through Omarchy's existing Quickshell components.
+![vibez TUI running in tmux](assets/vibez-tui.png)
 
-## Requirements
+---
 
-- Omarchy 4.
-- vibez installed and available on `PATH`.
-- `tmux` for persistent playback after closing the terminal window.
-- A terminal available through `ghostty`, `alacritty`, `kitty`,
-  `xdg-terminal-exec`, or `vibez` launched from an existing terminal.
+## ✨ Features
 
-## Install
+- 🎵 **Now-Playing Status**: Displays track title, artist, album, and live playback status in the Omarchy bar.
+- 🖼️ **Album Art & Metadata**: Clean popup with album cover preview, title, artist, and album name.
+- ⏱️ **Seekable Progress Bar**: Interactive time slider with elapsed and total duration timestamps (`mm:ss`).
+- ⏯️ **Transport Controls**: Previous, Play/Pause, Next, and Open TUI buttons.
+- 🔄 **Mouse Wheel Track Switching**: Scroll on the bar icon to skip forward or backward between tracks.
+- ⚡ **IPC Support**: Full CLI and keybind control via `omarchy ipc io.github.jeffcortez23.omarchy-vibez <action>`.
+- 🪟 **Persistent Terminal Session**: Uses `tmux` in the background so closing your terminal window never interrupts playback.
+- 🎨 **Adaptive Omarchy Theming**: Automatically matches your active Omarchy theme colors and typography.
+- ⚙️ **Configurable**: Optional in-bar label, customizable click actions, scroll actions, and idle hiding.
 
-From this local folder:
+---
 
-```bash
-omarchy plugin add /home/elyefris/Documents/Codex/2026-08-20/loco-ahora-que-est-de-moda/outputs/omarchy-vibez --enable
-omarchy bar move io.github.local.omarchy-vibez --section center
-```
+## 📋 Requirements
 
-If the plugin is already installed but not visible on the bar:
+1. **Omarchy Linux** (v4+) with the Quickshell-based shell.
+2. [`vibez`](https://github.com/simonepelosi/vibez) installed and authenticated on your system.
+3. `tmux` (recommended for persistent background playback).
+4. Any supported terminal emulator: `ghostty`, `alacritty`, `kitty`, `foot`, or `xdg-terminal-exec`.
+5. Nerd Font support on your system.
 
-```bash
-omarchy plugin enable io.github.local.omarchy-vibez --section center
-omarchy bar put io.github.local.omarchy-vibez --section center
-```
+### Quick Setup
 
-From a Git repo after publishing:
+Check your system prerequisites:
 
 ```bash
-omarchy plugin add https://github.com/YOUR_USER/omarchy-vibez.git --enable
-omarchy bar put io.github.local.omarchy-vibez --section center
+./scripts/check-prereqs.sh
 ```
 
-## Usage
+Install `tmux` and `ghostty` (or your preferred terminal) if not already installed:
 
-- Left click opens the popup by default.
-- Middle click or right click toggles play-pause.
-- Inside the popup, `Space` toggles play-pause, `n` skips next, `p` goes
-  previous, `o` opens vibez, and `Esc` closes the popup.
+```bash
+sudo pacman -S --needed tmux ghostty
+```
 
-## Notes
+Install `vibez` (if not already installed):
 
-The launch command opens or resumes a persistent `tmux` session named `vibez`.
-It creates the session detached when it does not exist, then attaches the new
-terminal window to it. Closing the terminal window detaches from the session,
-so playback and MPRIS keep running. To stop playback completely, quit inside
-vibez with `:q` or kill the `tmux` session.
+```bash
+curl --proto '=https' --tlsv1.2 -sSf \
+  https://raw.githubusercontent.com/simonepelosi/vibez/main/scripts/install.sh | sh
+```
 
-If your terminal is different, edit the `launchVibez.command` value in
-`Panel.qml`.
+*Note: Launch `vibez` in your terminal once and complete the initial Apple Music login before using the bar controls.*
 
-This plugin is intentionally small. Vibe mode, search, queue editing, and auth
-remain inside the vibez TUI.
+---
+
+## 🚀 Installation
+
+### From GitHub
+
+```bash
+# Add the plugin and enable it
+omarchy plugin add https://github.com/JeffCortez23/omarchy-vibez.git --enable
+
+# Place it on the center section of your bar (or left / right)
+omarchy bar move io.github.jeffcortez23.omarchy-vibez --section center
+```
+
+### From Local Checkout
+
+```bash
+omarchy plugin add /path/to/omarchy-vibez --enable
+omarchy bar move io.github.jeffcortez23.omarchy-vibez --section center
+```
+
+If the plugin is already installed but you want to place or re-enable it:
+
+```bash
+omarchy plugin enable io.github.jeffcortez23.omarchy-vibez --section center
+omarchy bar put io.github.jeffcortez23.omarchy-vibez --section center
+```
+
+---
+
+## 🎮 Usage & Controls
+
+### Mouse Controls
+- **Left click**: Opens the popup panel (or toggles play/pause if configured).
+- **Middle / Right click**: Toggles play/pause.
+- **Mouse scroll (wheel up/down)**: Skips to Next / Previous track.
+
+### Keyboard Controls (Inside Popup Panel)
+- `Space`: Toggle play/pause.
+- `n`: Next track.
+- `p`: Previous track.
+- `o`: Open `vibez` TUI in terminal.
+- `Left` / `Right` arrow: Seek backward / forward.
+- `Esc`: Close the popup panel.
+
+### IPC & Hyprland Keybindings
+You can trigger plugin actions from custom scripts, shortcuts, or your `~/.config/hypr/bindings.lua`:
+
+| Command | Action |
+| :--- | :--- |
+| `omarchy ipc io.github.jeffcortez23.omarchy-vibez toggle` | Open / close the popup panel |
+| `omarchy ipc io.github.jeffcortez23.omarchy-vibez playpause` | Toggle play / pause |
+| `omarchy ipc io.github.jeffcortez23.omarchy-vibez next` | Next track |
+| `omarchy ipc io.github.jeffcortez23.omarchy-vibez previous` | Previous track |
+| `omarchy ipc io.github.jeffcortez23.omarchy-vibez launch` | Open / attach to `vibez` TUI |
+| `omarchy ipc io.github.jeffcortez23.omarchy-vibez status` | Output playback state (`playing`, `paused`, `stopped`) |
+| `omarchy ipc io.github.jeffcortez23.omarchy-vibez track` | Output current track title and artist |
+
+---
+
+## ⚙️ Configuration
+
+You can customize the widget behavior in `~/.config/omarchy/shell.json` or via `omarchy bar set`:
+
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `showTitle` | `boolean` | `true` | Show track title in tooltip and panel |
+| `showArtist` | `boolean` | `true` | Show artist in tooltip and panel |
+| `showLabelOnBar` | `boolean` | `false` | Display track title & artist directly on the status bar |
+| `maxLabelWidth` | `number` | `180` | Maximum pixel width for in-bar text label |
+| `hideWhenClosed` | `boolean` | `false` | Hide widget when `vibez` is not running |
+| `leftClick` | `string` | `"Open panel"` | Left click action (`"Open panel"` or `"Play/pause"`) |
+| `scrollAction` | `string` | `"Previous/next track"` | Scroll action (`"Previous/next track"` or `"Disabled"`) |
+
+### Configuration Examples
+
+```bash
+# Show track label directly on the status bar:
+omarchy bar set io.github.jeffcortez23.omarchy-vibez showLabelOnBar true --json
+
+# Set left-click to immediately toggle play/pause:
+omarchy bar set io.github.jeffcortez23.omarchy-vibez leftClick '"Play/pause"' --json
+
+# Hide the widget when vibez is not playing:
+omarchy bar set io.github.jeffcortez23.omarchy-vibez hideWhenClosed true --json
+```
+
+---
+
+## 🔁 Persistent Playback
+
+`vibez` runs playback and its MPRIS service inside its terminal process. To keep music playing after closing the terminal window, this plugin launches `vibez` in a dedicated `tmux` session named `vibez`:
+
+```bash
+tmux has-session -t vibez 2>/dev/null || tmux new-session -d -s vibez vibez
+tmux attach-session -t vibez
+```
+
+- Closing the terminal window simply detaches from the session while playback continues.
+- To completely exit `vibez`, press `:q` inside the TUI or run:
+  ```bash
+  tmux kill-session -t vibez
+  ```
+
+---
+
+## 🔄 Updating
+
+```bash
+omarchy plugin update io.github.jeffcortez23.omarchy-vibez
+omarchy restart shell
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+- **Widget says "vibez is not running"**: Start `vibez` in your terminal and begin playback once. The plugin attaches as soon as the MPRIS player becomes active.
+- **Check MPRIS status**:
+  ```bash
+  busctl --user list | grep -i vibez
+  ```
+- **Check active tmux session**:
+  ```bash
+  tmux ls
+  tmux attach -t vibez
+  ```
+- **Reload shell plugins cache**:
+  ```bash
+  omarchy-shell shell rescanPlugins
+  omarchy restart shell
+  ```
+
+---
+
+## 📄 License
+
+Distributed under the [MIT License](LICENSE). Copyright (c) 2026 Jeff Cortez.
+

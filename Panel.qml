@@ -8,13 +8,17 @@ import qs.Ui
 
 Panel {
   id: root
-  moduleName: "io.github.local.omarchy-vibez"
-  ipcTarget: "io.github.local.omarchy-vibez"
+  moduleName: "io.github.jeffcortez23.omarchy-vibez"
+  ipcTarget: "io.github.jeffcortez23.omarchy-vibez"
+  manageIpc: false
 
   readonly property bool showTitle: setting("showTitle", true) !== false
   readonly property bool showArtist: setting("showArtist", true) !== false
+  readonly property bool showLabelOnBar: setting("showLabelOnBar", false) === true
+  readonly property int maxLabelWidth: Math.max(Style.space(60), Style.space(Number(setting("maxLabelWidth", 180))))
   readonly property bool hideWhenClosed: setting("hideWhenClosed", false) === true
   readonly property string leftClick: String(setting("leftClick", "Open panel"))
+  readonly property string scrollAction: String(setting("scrollAction", "Previous/next track"))
   readonly property bool panelOnLeft: leftClick !== "Play/pause"
 
   readonly property var players: Mpris.players ? Mpris.players.values : []
@@ -53,19 +57,78 @@ Panel {
 
   Process {
     id: launchVibez
-    command: ["sh", "-lc", "vibez_cmd='if command -v tmux >/dev/null 2>&1; then tmux has-session -t vibez 2>/dev/null || tmux new-session -d -s vibez vibez; tmux attach-session -t vibez; else exec vibez; fi'; uwsm app -- ghostty -e sh -lc \"$vibez_cmd\" || uwsm app -- alacritty -e sh -lc \"$vibez_cmd\" || uwsm app -- kitty -e sh -lc \"$vibez_cmd\" || xdg-terminal-exec sh -lc \"$vibez_cmd\" || sh -lc \"$vibez_cmd\""]
+    command: ["sh", "-lc", "vibez_cmd='if command -v tmux >/dev/null 2>&1; then tmux has-session -t vibez 2>/dev/null || tmux new-session -d -s vibez vibez; tmux attach-session -t vibez; else exec vibez; fi'; uwsm app -- ghostty -e sh -lc \"$vibez_cmd\" || uwsm app -- alacritty -e sh -lc \"$vibez_cmd\" || uwsm app -- kitty -e sh -lc \"$vibez_cmd\" || uwsm app -- foot -e sh -lc \"$vibez_cmd\" || xdg-terminal-exec sh -lc \"$vibez_cmd\" || sh -lc \"$vibez_cmd\""]
+  }
+
+  IpcHandler {
+    target: root.ipcTarget
+    function open(): void { root.open() }
+    function close(): void { root.close() }
+    function show(): void { root.open() }
+    function hide(): void { root.close() }
+    function toggle(): void { root.toggle() }
+    function refresh(): string { if (root.player) root.player.positionChanged(); return "ok" }
+    function status(): string { return root.live ? (root.playing ? "playing" : "paused") : "stopped" }
+    function track(): string { return root.live ? root.label : "" }
+    function title(): string { return root.trackTitle }
+    function artist(): string { return root.trackArtist }
+    function album(): string { return root.trackAlbum }
+    function play(): string { if (root.player && root.player.canPlay) root.player.play(); return "ok" }
+    function pause(): string { if (root.player && root.player.canPause) root.player.pause(); return "ok" }
+    function playpause(): string { if (root.player) root.player.togglePlaying(); return "ok" }
+    function next(): string { if (root.player && root.player.canGoNext) root.player.next(); return "ok" }
+    function previous(): string { if (root.player && root.player.canGoPrevious) root.player.previous(); return "ok" }
+    function launch(): string { launchVibez.running = true; return "ok" }
+  }
+
+  TextMetrics {
+    id: labelMetrics
+    font.family: root.contentFontFamily
+    font.pixelSize: Style.font.caption
+    text: root.label
+  }
+
+  Component {
+    id: barContentComponent
+    Item {
+      anchors.fill: parent
+      Row {
+        anchors.centerIn: parent
+        spacing: Style.space(5)
+
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: "\uf001"
+          color: root.playing ? Color.accent : root.contentForeground
+          font.family: root.contentFontFamily
+          font.pixelSize: Style.bar.iconFont
+        }
+
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: root.label
+          color: root.playing ? root.contentForeground : root.dimForeground
+          font.family: root.contentFontFamily
+          font.pixelSize: Style.font.caption
+          elide: Text.ElideRight
+          width: Math.min(root.maxLabelWidth, labelMetrics.width)
+        }
+      }
+    }
   }
 
   BarIconButton {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "\uf001"
+    text: (root.showLabelOnBar && root.live && root.label !== "") ? "" : "\uf001"
     active: root.opened
     useActiveColor: root.playing
     foreground: root.live
       ? (root.playing ? Color.accent : root.contentForeground)
       : root.dimForeground
+    slotSize: Style.bar.iconSlot + ((root.showLabelOnBar && root.live && root.label !== "") ? Math.min(root.maxLabelWidth, labelMetrics.width + Style.space(8)) : 0)
+    iconComponent: (root.showLabelOnBar && root.live && root.label !== "") ? barContentComponent : null
     tooltipText: root.live
       ? (root.label || root.trackTitle || root.trackArtist || "vibez")
       : "Launch vibez"
@@ -82,6 +145,15 @@ Panel {
         root.player.togglePlaying()
       } else {
         root.toggle()
+      }
+    }
+
+    onWheelMoved: function(delta) {
+      if (root.scrollAction === "Disabled" || !root.live || !root.player) return
+      if (delta > 0 && root.player.canGoNext) {
+        root.player.next()
+      } else if (delta < 0 && root.player.canGoPrevious) {
+        root.player.previous()
       }
     }
   }
@@ -339,7 +411,8 @@ Panel {
       if (identity === "vibez" ||
           desktopEntry === "io.github.simonepelosi.vibez" ||
           desktopEntry === "vibez" ||
-          busName.indexOf("org.mpris.mediaplayer2.vibez") !== -1) {
+          busName.indexOf("org.mpris.mediaplayer2.vibez") !== -1 ||
+          busName.indexOf(".vibez") !== -1) {
         return candidate
       }
     }
