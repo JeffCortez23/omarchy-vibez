@@ -32,7 +32,7 @@ Panel {
   readonly property string trackTitle: live ? stripTags(player.trackTitle) : ""
   readonly property string trackArtist: live ? stripTags(player.trackArtist) : ""
   readonly property string trackAlbum: live ? stripTags(player.trackAlbum) : ""
-  readonly property string artUrl: live ? String(player.trackArtUrl || player.artUrl || "") : ""
+  readonly property string artUrl: live ? sanitizeArtUrl(player.trackArtUrl || player.artUrl) : ""
   readonly property string label: barLabel()
   readonly property real trackLength: live ? Math.max(0, Number(player.length || 0)) : 0
   readonly property real trackPosition: live ? Math.max(0, Number(player.position || 0)) : 0
@@ -455,5 +455,39 @@ Panel {
               .replace(/>/g, "&gt;")
               .replace(/"/g, "&quot;")
               .replace(/'/g, "&#39;")
+  }
+
+  function sanitizeArtUrl(rawUrl) {
+    if (rawUrl === null || rawUrl === undefined) return ""
+    var url = String(rawUrl).trim()
+    if (url === "") return ""
+
+    // Strictly enforce https:// scheme and restrict to valid HTTPS image URLs (e.g. Apple Music / mzstatic CDNs)
+    // Disallow file://, http://, qrc:/, data:, javascript: or relative paths to prevent local/arbitrary resource loading
+    try {
+      if (!url.startsWith("https://")) return ""
+
+      var httpsRegex = /^https:\/\/[a-zA-Z0-9.\-_]+(?::[0-9]+)?\/[^\s<>"'{}|\\^`]*$/
+      if (!httpsRegex.test(url)) return ""
+
+      var hostMatch = url.match(/^https:\/\/([a-zA-Z0-9.\-_]+)/)
+      if (!hostMatch || !hostMatch[1]) return ""
+      var host = hostMatch[1].toLowerCase()
+
+      if (host.endsWith("mzstatic.com") ||
+          host.endsWith("apple.com") ||
+          host.endsWith("icloud.com") ||
+          host.endsWith("mzstatic.akadns.net")) {
+        return url
+      }
+
+      if (/\.(jpg|jpeg|png|webp|avif)(\?.*)?$/i.test(url) || url.indexOf("/image/") !== -1) {
+        return url
+      }
+
+      return ""
+    } catch (e) {
+      return ""
+    }
   }
 }
