@@ -29,9 +29,9 @@ Panel {
     player.isPlaying === true
   )
 
-  readonly property string trackTitle: live ? String(player.trackTitle || "") : ""
-  readonly property string trackArtist: live ? String(player.trackArtist || "") : ""
-  readonly property string trackAlbum: live ? String(player.trackAlbum || "") : ""
+  readonly property string trackTitle: live ? stripTags(player.trackTitle) : ""
+  readonly property string trackArtist: live ? stripTags(player.trackArtist) : ""
+  readonly property string trackAlbum: live ? stripTags(player.trackAlbum) : ""
   readonly property string artUrl: live ? String(player.trackArtUrl || player.artUrl || "") : ""
   readonly property string label: barLabel()
   readonly property real trackLength: live ? Math.max(0, Number(player.length || 0)) : 0
@@ -131,7 +131,7 @@ Panel {
     slotSize: Style.bar.iconSlot + ((root.showLabelOnBar && root.live && root.label !== "") ? Math.min(root.maxLabelWidth, labelMetrics.width + Style.space(8)) : 0)
     iconComponent: (root.showLabelOnBar && root.live && root.label !== "") ? barContentComponent : null
     tooltipText: root.live
-      ? (root.label || root.trackTitle || root.trackArtist || "vibez")
+      ? (escapeForAutoText(root.label || root.trackTitle || root.trackArtist) || "vibez")
       : "Launch vibez"
 
     onPressed: function(buttonCode) {
@@ -440,5 +440,20 @@ Panel {
     var minutes = Math.floor(totalSeconds / 60)
     var remainingSeconds = totalSeconds % 60
     return minutes + ":" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds
+  }
+
+  function stripTags(raw) {
+    if (raw === null || raw === undefined) return ""
+    return String(raw).replace(/<[^>]*>/g, "").trim()
+  }
+
+  function escapeForAutoText(raw) {
+    if (raw === null || raw === undefined) return ""
+    var str = stripTags(raw)
+    return str.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#39;")
   }
 }
