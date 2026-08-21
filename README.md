@@ -18,6 +18,7 @@ and transport controls to appear. Recent vibez builds export the
 
 - Omarchy 4.
 - vibez installed and available on `PATH`.
+- `tmux` for persistent playback after closing the terminal window.
 - A terminal available through `ghostty`, `alacritty`, `kitty`,
   `xdg-terminal-exec`, or `vibez` launched from an existing terminal.
 
@@ -53,9 +54,13 @@ omarchy bar put io.github.local.omarchy-vibez --section center
 
 ## Notes
 
-The launch command tries `uwsm app -- ghostty -e vibez`, then Alacritty, Kitty,
-`xdg-terminal-exec`, and finally `vibez`. If your terminal is different, edit
-the `launchVibez.command` value in `Panel.qml`.
+The launch command opens `vibez` inside `tmux new-session -A -s vibez vibez`
+when `tmux` is installed. Closing the terminal window detaches from the
+session, so playback and MPRIS keep running. To stop playback completely, quit
+inside vibez with `:q` or kill the `tmux` session.
+
+If your terminal is different, edit the `launchVibez.command` value in
+`Panel.qml`.
 
 This plugin is intentionally small. Vibe mode, search, queue editing, and auth
 remain inside the vibez TUI.
