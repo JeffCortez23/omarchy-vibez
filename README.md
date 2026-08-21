@@ -26,7 +26,8 @@ and transport controls to appear. Recent vibez builds export the
 From this local folder:
 
 ```bash
-omarchy plugin add /home/elyefris/Documents/Codex/2026-08-20/loco-ahora-que-est-de-moda/outputs/omarchy-vibez --enable --section center
+omarchy plugin add /home/elyefris/Documents/Codex/2026-08-20/loco-ahora-que-est-de-moda/outputs/omarchy-vibez --enable
+omarchy bar move io.github.local.omarchy-vibez --section center
 ```
 
 If the plugin is already installed but not visible on the bar:
