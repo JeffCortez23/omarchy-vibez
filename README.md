@@ -105,13 +105,13 @@ You can trigger plugin actions from custom scripts, shortcuts, or your `~/.confi
 
 | Command | Action |
 | :--- | :--- |
-| `omarchy ipc io.github.jeffcortez23.omarchy-vibez toggle` | Open / close the popup panel |
-| `omarchy ipc io.github.jeffcortez23.omarchy-vibez playpause` | Toggle play / pause |
-| `omarchy ipc io.github.jeffcortez23.omarchy-vibez next` | Next track |
-| `omarchy ipc io.github.jeffcortez23.omarchy-vibez previous` | Previous track |
-| `omarchy ipc io.github.jeffcortez23.omarchy-vibez launch` | Open / attach to `vibez` TUI |
-| `omarchy ipc io.github.jeffcortez23.omarchy-vibez status` | Output playback state (`playing`, `paused`, `stopped`) |
-| `omarchy ipc io.github.jeffcortez23.omarchy-vibez track` | Output current track title and artist |
+| `omarchy shell io.github.jeffcortez23.omarchy-vibez toggle` | Open / close the popup panel |
+| `omarchy shell io.github.jeffcortez23.omarchy-vibez playpause` | Toggle play / pause |
+| `omarchy shell io.github.jeffcortez23.omarchy-vibez next` | Next track |
+| `omarchy shell io.github.jeffcortez23.omarchy-vibez previous` | Previous track |
+| `omarchy shell io.github.jeffcortez23.omarchy-vibez launch` | Open / attach to `vibez` TUI in tmux |
+| `omarchy shell io.github.jeffcortez23.omarchy-vibez status` | Output playback state (`playing`, `paused`, `stopped`) |
+| `omarchy shell io.github.jeffcortez23.omarchy-vibez track` | Output current track title and artist |
 
 ---
 
