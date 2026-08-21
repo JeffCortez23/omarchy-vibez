@@ -462,27 +462,22 @@ Panel {
     var url = String(rawUrl).trim()
     if (url === "") return ""
 
-    // Strictly enforce https:// scheme and restrict to valid HTTPS image URLs (e.g. Apple Music / mzstatic CDNs)
-    // Disallow file://, http://, qrc:/, data:, javascript: or relative paths to prevent local/arbitrary resource loading
     try {
       if (!url.startsWith("https://")) return ""
 
-      var httpsRegex = /^https:\/\/[a-zA-Z0-9.\-_]+(?::[0-9]+)?\/[^\s<>"'{}|\\^`]*$/
-      if (!httpsRegex.test(url)) return ""
+      var match = url.match(/^https:\/\/([a-zA-Z0-9.\-_]+)(?::[0-9]+)?(\/[^\s<>"'{}|\\^`]*)?$/)
+      if (!match || !match[1]) return ""
 
-      var hostMatch = url.match(/^https:\/\/([a-zA-Z0-9.\-_]+)/)
-      if (!hostMatch || !hostMatch[1]) return ""
-      var host = hostMatch[1].toLowerCase()
+      var host = match[1].toLowerCase()
+      if (host.indexOf("..") !== -1 || host.startsWith(".") || host.endsWith(".")) return ""
 
-      if (host.endsWith("mzstatic.com") ||
-          host.endsWith("apple.com") ||
-          host.endsWith("icloud.com") ||
-          host.endsWith("mzstatic.akadns.net")) {
-        return url
-      }
-
-      if (/\.(jpg|jpeg|png|webp|avif)(\?.*)?$/i.test(url) || url.indexOf("/image/") !== -1) {
-        return url
+      // Whitelist strictly to Apple Music / iTunes CDN domains with dot-boundary checks
+      var allowedApexDomains = ["mzstatic.com", "apple.com", "icloud.com", "mzstatic.akadns.net"]
+      for (var i = 0; i < allowedApexDomains.length; i++) {
+        var apex = allowedApexDomains[i]
+        if (host === apex || host.endsWith("." + apex)) {
+          return url
+        }
       }
 
       return ""
