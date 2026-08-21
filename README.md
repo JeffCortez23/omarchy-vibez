@@ -54,10 +54,11 @@ omarchy bar put io.github.local.omarchy-vibez --section center
 
 ## Notes
 
-The launch command opens `vibez` inside `tmux new-session -A -s vibez vibez`
-when `tmux` is installed. Closing the terminal window detaches from the
-session, so playback and MPRIS keep running. To stop playback completely, quit
-inside vibez with `:q` or kill the `tmux` session.
+The launch command opens or resumes a persistent `tmux` session named `vibez`.
+It creates the session detached when it does not exist, then attaches the new
+terminal window to it. Closing the terminal window detaches from the session,
+so playback and MPRIS keep running. To stop playback completely, quit inside
+vibez with `:q` or kill the `tmux` session.
 
 If your terminal is different, edit the `launchVibez.command` value in
 `Panel.qml`.

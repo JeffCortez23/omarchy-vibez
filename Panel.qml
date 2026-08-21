@@ -53,7 +53,7 @@ Panel {
 
   Process {
     id: launchVibez
-    command: ["sh", "-lc", "vibez_cmd='tmux new-session -A -s vibez vibez'; command -v tmux >/dev/null 2>&1 || vibez_cmd='vibez'; uwsm app -- ghostty -e sh -lc \"$vibez_cmd\" || uwsm app -- alacritty -e sh -lc \"$vibez_cmd\" || uwsm app -- kitty -e sh -lc \"$vibez_cmd\" || xdg-terminal-exec sh -lc \"$vibez_cmd\" || sh -lc \"$vibez_cmd\""]
+    command: ["sh", "-lc", "vibez_cmd='if command -v tmux >/dev/null 2>&1; then tmux has-session -t vibez 2>/dev/null || tmux new-session -d -s vibez vibez; tmux attach-session -t vibez; else exec vibez; fi'; uwsm app -- ghostty -e sh -lc \"$vibez_cmd\" || uwsm app -- alacritty -e sh -lc \"$vibez_cmd\" || uwsm app -- kitty -e sh -lc \"$vibez_cmd\" || xdg-terminal-exec sh -lc \"$vibez_cmd\" || sh -lc \"$vibez_cmd\""]
   }
 
   BarIconButton {
