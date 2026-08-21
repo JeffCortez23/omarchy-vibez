@@ -40,18 +40,9 @@ Check your system prerequisites:
 ./scripts/check-prereqs.sh
 ```
 
-Install `tmux` and `ghostty` (or your preferred terminal) if not already installed:
+Install `tmux` and your preferred terminal (`ghostty`, `alacritty`, `kitty`, or `foot`) using your package manager.
 
-```bash
-sudo pacman -S --needed tmux ghostty
-```
-
-Install `vibez` (if not already installed):
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf \
-  https://raw.githubusercontent.com/simonepelosi/vibez/main/scripts/install.sh | sh
-```
+Install `vibez` following the official [vibez installation instructions](https://github.com/simonepelosi/vibez).
 
 *Note: Launch `vibez` in your terminal once and complete the initial Apple Music login before using the bar controls.*
 
